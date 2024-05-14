@@ -22,6 +22,18 @@ jobs:
         java-version: 11
         distribution: 'adopt'
 
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
+    - name: List Android directory
+      run: ls -l $ANDROID_HOME/build-tools
+    - name: Echo env. variable $GITHUB_PATH
+      run: echo $GITHUB_PATH
+    - name: Exit!!!!!
+      run: exit 1
+
+    - name: Set zipalign path
+      run: echo "$ANDROID_HOME/build-tools/30.0.3" >> $GITHUB_PATH
+
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
