@@ -31,11 +31,18 @@ jobs:
     - name: Build APK
       run: ./gradlew assembleRelease
 
-    - name: List files in output directory
-      run: ls -R app/build/outputs/apk/
+    - name: Download keystore
+      run: echo "${{ secrets.KEYSTORE }}" | base64 --decode > keystore.jks
+
+    - name: Sign APK
+      run: |
+        jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore keystore.jks -storepass ${{ secrets.KEYSTORE_PASSWORD }} -keypass ${{ secrets.KEY_PASSWORD }} app/build/outputs/apk/release/app-release-unsigned.apk ${{ secrets.KEY_ALIAS }}
+
+    - name: Align APK
+      run: zipalign -v 4 app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/app-release.apk
 
     - name: Upload APK
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
-        name: app
+        name: ZOfflineObb
         path: app/build/outputs/apk/release/*
